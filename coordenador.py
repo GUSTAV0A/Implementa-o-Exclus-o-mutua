@@ -19,7 +19,7 @@ class Coordinator:
         self.running = True
 
     def log_message(self, message_type, process_id):
-        timestamp = (datetime.now().strftime("%d/%m/%Y às %H:%M:%S.%f")[:-3])
+        timestamp = (datetime.now().strftime("%d/%m/%Y as %H:%M:%S.%f")[:-3])
         print(f"Processo {process_id} - {message_type} - {timestamp}")
         with open("log.txt", "a") as f:
             f.write(f"Processo {process_id} - {message_type} - {timestamp}\n")

@@ -1,12 +1,16 @@
 import socket
 import time
 import sys
+import random
 from datetime import datetime
+import os
+
 
 F = 10  # Tamanho da mensagem
 COORDINATOR_IP = "127.0.0.1"
 PORT = 59672
-K = 2  # Tempo de espera na região crítica
+K_MIN = 1  # Tempo mínimo de espera na região crítica
+K_MAX = 3  # Tempo máximo de espera na região crítica
 R = 5  # Número de requisições
 REQUEST = 1
 GRANT = 2
@@ -19,9 +23,14 @@ class Process:
         self.addr = (COORDINATOR_IP, PORT)
 
     def log_access(self):
-        with open("resultado.txt", "a") as f:
+        timestamp = datetime.now().strftime("%d/%m/%Y às %H:%M:%S.%f")[:- 3]
+
+        caminho = os.path.dirname(os.path.abspath(__file__))
+        caminho_resultado = os.path.join(caminho, "resultado.txt")
+
+        with open(caminho_resultado, "a") as f:
             timestamp = datetime.now().strftime("%d/%m/%Y às %H:%M:%S.%f")[:- 3]
-            f.write(f"Processo {self.process_id} accessou em {timestamp}\n")
+            f.write(f"Processo {self.process_id} acessou em {timestamp}\n")
 
     def request_access(self):
         message = f"{REQUEST}|{self.process_id}|{'0' * (F - len(f'{REQUEST}|{self.process_id}|'))}"
@@ -40,9 +49,9 @@ class Process:
                     response, _ = self.socket.recvfrom(10)
                     if response.decode().startswith(f"{GRANT}"):
                         self.log_access()
-                        time.sleep(K)
+                        time.sleep(random.uniform(K_MIN, K_MAX))  # Tempo de espera variável
                         self.release_access()
-                        time.sleep(K)
+                        time.sleep(random.uniform(K_MIN, K_MAX))  # Tempo de espera variável
                         break
                 except socket.timeout:
                     continue
