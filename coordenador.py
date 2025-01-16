@@ -20,7 +20,6 @@ class Coordinator:
 
     def log_message(self, message_type, process_id):
         timestamp = (datetime.now().strftime("%d/%m/%Y as %H:%M:%S.%f")[:-3])
-        print(f"Processo {process_id} - {message_type} - {timestamp}")
         with open("log.txt", "a") as f:
             f.write(f"Processo {process_id} - {message_type} - {timestamp}\n")
 
@@ -85,5 +84,9 @@ class Coordinator:
             pass
 
 if __name__ == "__main__":
+    with open("log.txt", "w") as f:
+        pass
+    with open("resultado.txt","w") as f:
+        pass
     coordinator = Coordinator()
     coordinator.start()
