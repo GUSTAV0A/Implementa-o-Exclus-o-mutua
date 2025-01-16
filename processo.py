@@ -9,12 +9,14 @@ import os
 F = 10  # Tamanho da mensagem
 COORDINATOR_IP = "127.0.0.1"
 PORT = 59672
-K_MIN = 1  # Tempo mínimo de espera na região crítica
-K_MAX = 3  # Tempo máximo de espera na região crítica
+
 R = 5  # Número de requisições
 REQUEST = 1
 GRANT = 2
 RELEASE = 3
+
+caminho = os.path.dirname(os.path.abspath(__file__))
+caminho_resultado = os.path.join(caminho, "resultado.txt")
 
 class Process:
     def __init__(self, process_id):
@@ -23,13 +25,11 @@ class Process:
         self.addr = (COORDINATOR_IP, PORT)
 
     def log_access(self):
-        timestamp = datetime.now().strftime("%d/%m/%Y às %H:%M:%S.%f")[:- 3]
-
+        timestamp = datetime.now().strftime("%d/%m/%Y as %H:%M:%S.%f")[:- 3]
         caminho = os.path.dirname(os.path.abspath(__file__))
         caminho_resultado = os.path.join(caminho, "resultado.txt")
-
         with open(caminho_resultado, "a") as f:
-            timestamp = datetime.now().strftime("%d/%m/%Y às %H:%M:%S.%f")[:- 3]
+            timestamp = datetime.now().strftime("%d/%m/%Y as %H:%M:%S.%f")[:- 3]
             f.write(f"Processo {self.process_id} acessou em {timestamp}\n")
 
     def request_access(self):
@@ -49,15 +49,16 @@ class Process:
                     response, _ = self.socket.recvfrom(10)
                     if response.decode().startswith(f"{GRANT}"):
                         self.log_access()
-                        time.sleep(random.uniform(K_MIN, K_MAX))  # Tempo de espera variável
+                        time.sleep(random.uniform(0,3))  # Tempo de espera variável
                         self.release_access()
-                        time.sleep(random.uniform(K_MIN, K_MAX))  # Tempo de espera variável
+                        time.sleep(random.uniform(2,5))  # Tempo de espera variável
                         break
                 except socket.timeout:
                     continue
         self.socket.close()
 
 if __name__ == "__main__":
+   
     if len(sys.argv) != 2:
         print(f"Uso: python {sys.argv[0]} id_processo")
         sys.exit(1)
